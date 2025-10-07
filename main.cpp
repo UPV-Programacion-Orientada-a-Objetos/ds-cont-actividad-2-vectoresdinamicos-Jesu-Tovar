@@ -110,9 +110,10 @@ void despacharPaquete() {
         return;
     }
 
-    std::cout << "Analizando Cola... Buscando ALTA PRIORIDAD.\n";
+    std::cout << "Analizando cola... buscando paquetes por prioridad.\n";
 
     int indice = -1;
+
     for (int i = frente; i < fin; i++) {
         if (estados[i] == 'D' && prioridades[i] == 1) {
             indice = i;
@@ -121,18 +122,37 @@ void despacharPaquete() {
     }
 
     if (indice == -1) {
-        std::cout << "No hay paquetes de prioridad ALTA en cola.\n";
+        for (int i = frente; i < fin; i++) {
+            if (estados[i] == 'D' && prioridades[i] == 2) {
+                indice = i;
+                break;
+            }
+        }
+    }
+
+    if (indice == -1) {
+        for (int i = frente; i < fin; i++) {
+            if (estados[i] == 'D' && prioridades[i] == 3) {
+                indice = i;
+                break;
+            }
+        }
+    }
+
+    if (indice == -1) {
+        std::cout << "No hay paquetes disponibles para despachar.\n";
         return;
     }
 
     estados[indice] = 'E';
     std::cout << "DESPACHADO: Paquete " << ids[indice]
-              << " (Prioridad 1). Estado: 'E'.\n";
+              << " (Prioridad " << prioridades[indice] << "). Estado: 'E'.\n";
 
     if (indice == frente) {
         frente++;
     }
 }
+
 
 
 void liberarMemoria() {
