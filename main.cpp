@@ -11,6 +11,32 @@ int num_paquetes = 0;
 int frente = 0;
 int fin = 0;
 
+void reporte() {
+    std::string destinoBuscado;
+    std::cout << "Ingrese el destino para el reporte: ";
+    std::cin.ignore();
+    std::getline(std::cin, destinoBuscado);
+
+    int contador = 0;
+    float pesoTotal = 0.0;
+
+    for (int i = frente; i < fin; i++) {
+        if (estados[i] == 'E' && destinos[i] == destinoBuscado) {
+            contador++;
+            pesoTotal += pesos[i];
+        }
+    }
+
+    std::cout << "Reporte para destino '" << destinoBuscado << "':\n";
+    std::cout << "  Paquetes en cola: " << contador << "\n";
+    if (contador > 0)
+        std::cout << "  Peso promedio: " << (pesoTotal / contador) << " kg\n";
+}
+
+void pop(){
+
+}
+
 void CrearArray() {
     capacidad = 50;
     ids = new int[capacidad];
@@ -68,7 +94,7 @@ void agregarPaquete() {
     std::cout << "Ingrese prioridad (1=Alta, 2=Media, 3=Baja): ";
     std::cin >> prioridades[fin];
 
-    estados[fin] = 'E';
+    estados[fin] = 'D';
 
     fin++;
     num_paquetes++;
@@ -83,11 +109,30 @@ void despacharPaquete() {
         return;
     }
 
-    std::cout << "Despachando paquete...\n";
-    estados[frente] = 'D';
-    std::cout << "Paquete " << ids[frente] << " despachado con exito. Estado: 'D'.\n";
-    frente++;
+    std::cout << "Analizando Cola... Buscando ALTA PRIORIDAD.\n";
+
+    int indice = -1;
+    for (int i = frente; i < fin; i++) {
+        if (estados[i] == 'D' && prioridades[i] == 1) {
+            indice = i;
+            break;
+        }
+    }
+
+    if (indice == -1) {
+        std::cout << "No hay paquetes de prioridad ALTA en cola.\n";
+        return;
+    }
+
+    estados[indice] = 'E';
+    std::cout << "DESPACHADO: Paquete " << ids[indice]
+              << " (Prioridad 1). Estado: 'E'.\n";
+
+    if (indice == frente) {
+        frente++;
+    }
 }
+
 
 void liberarMemoria() {
     delete [] ids;
@@ -105,19 +150,23 @@ int main() {
     int opcion;
     do {
         std::cout << "\n--- Sistema de Despacho Logistico MegaEnvio (Modo Punteros) ---\n";
-        std::cout << "1. Agregar Paquete (Encolar)\n";
-        std::cout << "2. Despachar Paquete (Desencolar)\n";
-        std::cout << "3. Salir (Liberar Memoria)\n";
+        std::cout << "1. Recibir nuevo paquete (Push)\n";
+        std::cout << "2. Procesar recepcion (pop y encolar) \n";
+        std::cout << "3. Despachar (desencolar con prioridad)\n";
+        std::cout << "4. Reporte de estados \n";
+        std::cout << "5. Salir (Liberar Memoria)\n";
         std::cout << "Seleccione una opcion: ";
         std::cin >> opcion;
 
         switch (opcion) {
-            case 1: agregarPaquete(); break;
-            case 2: despacharPaquete(); break;
-            case 3: liberarMemoria(); break;
-            default: std::cout << "Opcion invalida\n";
+            case 1: agregarPaquete(); break; // ya jala
+            case 2: pop(); break;
+            case 3: despacharPaquete(); break; // YA JALAAA
+            case 4: reporte(); break; // ya jala
+            case 5: liberarMemoria(); break; // ya jala
+            default: std::cout << "Opcion invalida\n"; // ya jala
         }
-    } while (opcion != 3);
+    } while (opcion != 5);
 
     return 0;
 }
